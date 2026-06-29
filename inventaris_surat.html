@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inventaris Surat Masuk & Keluar</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+:root {
+  --surface-0: #f1f0ec;
+  --surface-1: #f7f6f3;
+  --surface-2: #ffffff;
+  --text-primary: #1a1a18;
+  --text-secondary: #5f5e5a;
+  --text-muted: #888780;
+  --border: rgba(0,0,0,0.1);
+  --border-strong: rgba(0,0,0,0.18);
+  --border-accent: #378add;
+  --border-danger: #e24b4a;
+  --bg-accent: #e6f1fb;
+  --bg-success: #eaf3de;
+  --bg-warning: #faeeda;
+  --bg-danger: #fcebeb;
+  --text-accent: #185fa5;
+  --text-success: #3b6d11;
+  --text-warning: #854f0b;
+  --text-danger: #a32d2d;
+  --fill-accent: #378add;
+  --fill-accent-hover: #185fa5;
+  --on-accent: #ffffff;
+  --radius: 8px;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface-0: #1a1a18;
+    --surface-1: #222220;
+    --surface-2: #2c2c2a;
+    --text-primary: #f1f0ec;
+    --text-secondary: #b4b2a9;
+    --text-muted: #888780;
+    --border: rgba(255,255,255,0.1);
+    --border-strong: rgba(255,255,255,0.18);
+    --bg-accent: #0c447c;
+    --bg-success: #27500a;
+    --bg-warning: #633806;
+    --bg-danger: #501313;
+    --text-accent: #85b7eb;
+    --text-success: #97c459;
+    --text-warning: #ef9f27;
+    --text-danger: #f09595;
+  }
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);background:var(--surface-0);color:var(--text-primary);font-size:15px}
+.app{min-height:100vh;display:flex;flex-direction:column}
+.hidden{display:none!important}
+
+/* LOGIN */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;background:var(--surface-0)}
+.login-card{background:var(--surface-2);border:0.5px solid var(--border);border-radius:16px;padding:2.5rem 2rem;width:100%;max-width:380px;box-shadow:0 4px 24px rgba(0,0,0,.08)}
+.login-logo{text-align:center;margin-bottom:1.75rem}
+.login-logo i{font-size:44px;color:var(--fill-accent)}
+.login-logo h1{font-size:20px;font-weight:600;margin-top:10px}
+.login-logo p{font-size:13px;color:var(--text-muted);margin-top:4px}
+.field{margin-bottom:1rem}
+.field label{display:block;font-size:13px;color:var(--text-secondary);margin-bottom:6px;font-weight:500}
+.field input{width:100%;padding:10px 13px;border:0.5px solid var(--border-strong);border-radius:var(--radius);font-size:14px;background:var(--surface-1);color:var(--text-primary);transition:border .15s}
+.field input:focus{outline:none;border-color:var(--border-accent);box-shadow:0 0 0 3px var(--bg-accent)}
+.btn-primary{width:100%;padding:11px;border:none;border-radius:var(--radius);background:var(--fill-accent);color:var(--on-accent);font-size:14px;font-weight:600;cursor:pointer;margin-top:.5rem;transition:background .15s}
+.btn-primary:hover{background:var(--fill-accent-hover)}
+.err-msg{color:var(--text-danger);font-size:13px;margin-top:8px;text-align:center;padding:.5rem;background:var(--bg-danger);border-radius:var(--radius)}
+.demo-hint{margin-top:1rem;padding:.75rem;background:var(--surface-1);border-radius:var(--radius);font-size:12.5px;color:var(--text-muted)}
+
+/* TOPBAR */
+.topbar{background:var(--surface-2);border-bottom:0.5px solid var(--border);padding:0 1.25rem;display:flex;align-items:center;justify-content:space-between;height:54px;position:sticky;top:0;z-index:10}
+.topbar-brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px}
+.topbar-brand i{font-size:24px;color:var(--fill-accent)}
+.topbar-user{display:flex;align-items:center;gap:12px}
+.user-badge{width:34px;height:34px;border-radius:50%;background:var(--bg-accent);color:var(--text-accent);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600}
+.btn-logout{background:none;border:0.5px solid var(--border-strong);border-radius:var(--radius);padding:6px 13px;font-size:13px;cursor:pointer;color:var(--text-secondary);display:flex;align-items:center;gap:5px;transition:all .15s}
+.btn-logout:hover{background:var(--surface-1)}
+
+/* LAYOUT */
+.main-layout{display:flex;flex:1;min-height:calc(100vh - 54px)}
+.sidebar{width:224px;background:var(--surface-2);border-right:0.5px solid var(--border);padding:1rem 0;flex-shrink:0}
+.nav-section{padding:0 .75rem;margin-bottom:1rem}
+.nav-label{font-size:11px;color:var(--text-muted);font-weight:600;padding:0 .5rem;margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.06em}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:var(--radius);cursor:pointer;font-size:13.5px;color:var(--text-secondary);transition:all .15s;user-select:none}
+.nav-item:hover{background:var(--surface-1);color:var(--text-primary)}
+.nav-item.active{background:var(--bg-accent);color:var(--text-accent);font-weight:500}
+.nav-item i{font-size:18px;flex-shrink:0}
+.content{flex:1;padding:1.5rem;overflow-y:auto}
+
+/* PAGE HEADER */
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+.page-title{font-size:18px;font-weight:600}
+.page-sub{font-size:13px;color:var(--text-muted);margin-top:2px}
+.btn-add{display:flex;align-items:center;gap:6px;padding:9px 16px;background:var(--fill-accent);color:var(--on-accent);border:none;border-radius:var(--radius);font-size:13.5px;cursor:pointer;font-weight:500;transition:background .15s}
+.btn-add:hover{background:var(--fill-accent-hover)}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.25rem}
+.stat-card{background:var(--surface-1);border-radius:var(--radius);padding:.875rem 1rem;position:relative;overflow:hidden}
+.stat-card .s-label{font-size:12px;color:var(--text-muted);margin-bottom:4px}
+.stat-card .s-val{font-size:24px;font-weight:600}
+.stat-card .s-icon{font-size:22px;position:absolute;top:.875rem;right:1rem;opacity:.6}
+.stat-card.blue .s-icon{color:var(--text-accent)}
+.stat-card.green .s-icon{color:var(--text-success)}
+.stat-card.amber .s-icon{color:var(--text-warning)}
+.stat-card.red .s-icon{color:var(--text-danger)}
+
+/* FILTER */
+.filter-bar{display:flex;align-items:center;gap:8px;margin-bottom:1rem;flex-wrap:wrap}
+.filter-bar input,.filter-bar select{padding:8px 11px;border:0.5px solid var(--border-strong);border-radius:var(--radius);font-size:13.5px;background:var(--surface-1);color:var(--text-primary)}
+.filter-bar input{flex:1;min-width:200px}
+.filter-bar input:focus,.filter-bar select:focus{outline:none;border-color:var(--border-accent)}
+
+/* TABLE */
+.table-wrap{background:var(--surface-2);border:0.5px solid var(--border);border-radius:12px;overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+thead{background:var(--surface-1)}
+th{padding:10px 13px;text-align:left;font-weight:500;font-size:12.5px;color:var(--text-muted);border-bottom:0.5px solid var(--border)}
+td{padding:10px 13px;border-bottom:0.5px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--surface-1)}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:500}
+.badge.masuk{background:var(--bg-accent);color:var(--text-accent)}
+.badge.keluar{background:var(--bg-success);color:var(--text-success)}
+.badge.pending{background:var(--bg-warning);color:var(--text-warning)}
+.badge.selesai{background:var(--bg-success);color:var(--text-success)}
+.badge.proses{background:var(--bg-accent);color:var(--text-accent)}
+.badge.rahasia{background:var(--bg-danger);color:var(--text-danger)}
+
+/* ACTION BUTTONS */
+.row-actions{display:flex;gap:6px}
+.btn-icon{background:none;border:0.5px solid var(--border);border-radius:6px;padding:5px 8px;cursor:pointer;color:var(--text-secondary);font-size:15px;display:inline-flex;align-items:center;transition:all .15s}
+.btn-icon:hover{background:var(--surface-1);color:var(--text-primary);border-color:var(--border-strong)}
+.btn-icon.danger:hover{color:var(--text-danger);border-color:var(--border-danger)}
+.btn-icon.info:hover{color:var(--text-accent);border-color:var(--border-accent)}
+.no-data{text-align:center;padding:3rem;color:var(--text-muted)}
+.no-data i{font-size:36px;display:block;margin-bottom:8px;opacity:.4}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;display:flex;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(2px)}
+.modal-box{background:var(--surface-2);border:0.5px solid var(--border);border-radius:16px;width:100%;max-width:620px;max-height:90vh;overflow-y:auto}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 1.5rem;border-bottom:0.5px solid var(--border);position:sticky;top:0;background:var(--surface-2);z-index:2}
+.modal-title{font-size:16px;font-weight:600}
+.btn-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--text-muted);display:flex;align-items:center;padding:4px;border-radius:var(--radius)}
+.btn-close:hover{background:var(--surface-1);color:var(--text-primary)}
+.modal-body{padding:1.25rem 1.5rem}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.form-field{margin-bottom:.75rem}
+.form-field label{display:block;font-size:13px;color:var(--text-secondary);margin-bottom:5px;font-weight:500}
+.form-field input,.form-field select,.form-field textarea{width:100%;padding:9px 12px;border:0.5px solid var(--border-strong);border-radius:var(--radius);font-size:13.5px;background:var(--surface-1);color:var(--text-primary);transition:border .15s}
+.form-field input:focus,.form-field select:focus,.form-field textarea:focus{outline:none;border-color:var(--border-accent);box-shadow:0 0 0 3px var(--bg-accent)}
+.form-field textarea{resize:vertical;min-height:80px}
+.form-section{font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem;padding-top:.75rem;border-top:0.5px solid var(--border)}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;padding:1rem 1.5rem;border-top:0.5px solid var(--border);position:sticky;bottom:0;background:var(--surface-2)}
+.btn-sec{padding:9px 18px;border:0.5px solid var(--border-strong);border-radius:var(--radius);background:none;font-size:13.5px;cursor:pointer;color:var(--text-secondary);transition:all .15s}
+.btn-sec:hover{background:var(--surface-1)}
+.btn-save{padding:9px 22px;border:none;border-radius:var(--radius);background:var(--fill-accent);color:var(--on-accent);font-size:13.5px;font-weight:600;cursor:pointer;transition:background .15s}
+.btn-save:hover{background:var(--fill-accent-hover)}
+
+/* DETAIL */
+.detail-section{margin-bottom:1.25rem}
+.detail-section h4{font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem;padding-bottom:.5rem;border-bottom:0.5px solid var(--border)}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem .75rem}
+.detail-row{display:flex;flex-direction:column;gap:3px}
+.detail-row.full{grid-column:1/-1}
+.d-label{font-size:12px;color:var(--text-muted)}
+.d-val{font-size:14px;color:var(--text-primary)}
+.fisik-info{background:var(--surface-1);border-radius:var(--radius);padding:.875rem;display:grid;grid-template-columns:1fr 1fr;gap:.5rem .75rem}
+.tujuan-list{list-style:none;padding:0}
+.tujuan-list li{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--border);font-size:13.5px}
+.tujuan-list li:last-child{border-bottom:none}
+.tujuan-list li i{font-size:18px;color:var(--text-accent);margin-top:1px}
+.tujuan-no{font-size:11.5px;color:var(--text-muted);display:block;margin-top:2px}
+.timeline{list-style:none;padding-left:1.5rem;position:relative}
+.timeline::before{content:'';position:absolute;left:0;top:0;bottom:0;width:1.5px;background:var(--border-strong)}
+.timeline li{position:relative;padding:0 0 1rem 1rem;font-size:13.5px}
+.timeline li::before{content:'';position:absolute;left:-4.5px;top:5px;width:9px;height:9px;border-radius:50%;background:var(--fill-accent);border:2px solid var(--surface-2)}
+.t-date{font-size:11.5px;color:var(--text-muted)}
+.t-act{color:var(--text-primary);margin-top:1px}
+
+/* PENGIRIMAN */
+.kirim-card{background:var(--surface-2);border:0.5px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:1rem}
+.kirim-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.75rem}
+.kirim-no{font-size:12.5px;color:var(--text-muted)}
+.kirim-perihal{font-size:15px;font-weight:600;margin-top:3px}
+.kirim-route{display:flex;align-items:center;gap:8px;margin-top:.75rem;padding:.875rem;background:var(--surface-1);border-radius:var(--radius);font-size:13.5px;flex-wrap:wrap}
+.kirim-node{text-align:center;flex:1;min-width:80px}
+.kirim-node .kn-label{font-size:11px;color:var(--text-muted)}
+.kirim-node .kn-val{font-size:13px;font-weight:500;margin-top:2px}
+.kirim-arrow{color:var(--text-muted);font-size:18px;flex-shrink:0}
+.kirim-via{text-align:center;flex:.8;min-width:80px}
+.kirim-via .kn-label{font-size:11px;color:var(--text-muted)}
+.kirim-via .kn-val{font-size:12px;color:var(--text-accent);margin-top:3px;background:var(--bg-accent);padding:2px 9px;border-radius:999px;display:inline-block}
+
+/* TABS */
+.tab-bar{display:flex;gap:4px;background:var(--surface-1);padding:4px;border-radius:var(--radius);margin-bottom:1.25rem;width:fit-content;border:0.5px solid var(--border)}
+.tab-btn{padding:7px 18px;border:none;border-radius:6px;background:none;font-size:13.5px;cursor:pointer;color:var(--text-secondary);transition:all .15s}
+.tab-btn.active{background:var(--surface-2);color:var(--text-primary);font-weight:500;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+
+/* UPLOAD */
+.upload-area{border:1.5px dashed var(--border-strong);border-radius:var(--radius);padding:1.25rem;text-align:center;cursor:pointer;transition:all .15s;background:var(--surface-1);margin-top:.25rem}
+.upload-area:hover{border-color:var(--border-accent);background:var(--bg-accent)}
+.upload-area i{font-size:30px;color:var(--text-muted);display:block;margin-bottom:6px}
+.upload-area p{font-size:13px;color:var(--text-muted)}
+.upload-area small{font-size:11.5px;color:var(--text-muted)}
+
+/* TUJUAN ENTRY */
+.tujuan-entry{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end;margin-bottom:6px}
+.btn-rem{background:none;border:0.5px solid var(--border-danger);border-radius:var(--radius);padding:8px 10px;cursor:pointer;color:var(--text-danger);font-size:15px;display:flex;align-items:center}
+.btn-rem:hover{background:var(--bg-danger)}
+.btn-add-tujuan{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:0.5px solid var(--border-accent);color:var(--text-accent);border-radius:var(--radius);background:none;font-size:13px;cursor:pointer;margin-top:4px;transition:all .15s}
+.btn-add-tujuan:hover{background:var(--bg-accent)}
+.tujuan-divider{border:none;border-top:0.5px dashed var(--border);margin:.75rem 0}
+
+@media(max-width:768px){
+  .stats-row{grid-template-columns:1fr 1fr}
+  .sidebar{display:none}
+  .form-grid{grid-template-columns:1fr}
+  .tujuan-entry{grid-template-columns:1fr auto}
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+<!-- ===== LOGIN PAGE ===== -->
+<div id="loginPage">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-logo">
+        <i class="ti ti-mail-fast"></i>
+        <h1>Inventaris Surat</h1>
+        <p>Sistem manajemen surat masuk &amp; keluar instansi</p>
+      </div>
+      <div class="field">
+        <label>Username</label>
+        <input type="text" id="loginUser" placeholder="Masukkan username" value="admin" autocomplete="username">
+      </div>
+      <div class="field">
+        <label>Kata sandi</label>
+        <input type="password" id="loginPass" placeholder="••••••••" value="1234" autocomplete="current-password">
+      </div>
+      <button class="btn-primary" onclick="doLogin()">Masuk</button>
+      <div class="err-msg hidden" id="loginErr">Username atau kata sandi salah.</div>
+      <div class="demo-hint">
+        Demo: <strong>admin</strong> / <strong>1234</strong> &nbsp;atau&nbsp; <strong>staff</strong> / <strong>abcd</strong>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MAIN APP ===== -->
+<div id="mainApp" class="hidden">
+  <div class="topbar">
+    <div class="topbar-brand">
+      <i class="ti ti-mail-fast"></i>
+      Inventaris Surat
+    </div>
+    <div class="topbar-user">
+      <div class="user-badge" id="userBadge">AD</div>
+      <span style="font-size:13px;color:var(--text-secondary)" id="userLabel">admin</span>
+      <button class="btn-logout" onclick="doLogout()">
+        <i class="ti ti-logout" style="font-size:15px"></i> Keluar
+      </button>
+    </div>
+  </div>
+
+  <div class="main-layout">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Menu Utama</div>
+        <div class="nav-item active" onclick="showPage('dashboard',this)">
+          <i class="ti ti-dashboard"></i> Dashboard
+        </div>
+        <div class="nav-item" onclick="showPage('masuk',this)">
+          <i class="ti ti-mail-down"></i> Surat Masuk
+        </div>
+        <div class="nav-item" onclick="showPage('keluar',this)">
+          <i class="ti ti-mail-up"></i> Surat Keluar
+        </div>
+        <div class="nav-item" onclick="showPage('pengiriman',this)">
+          <i class="ti ti-send"></i> Pengiriman
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content" id="mainContent"></div>
+  </div>
+</div>
+
+<!-- ===== MODAL FORM TAMBAH/EDIT ===== -->
+<div class="modal-bg hidden" id="modalForm">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title" id="modalTitle">Tambah Surat</span>
+      <button class="btn-close" onclick="closeModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer">
+      <button class="btn-sec" onclick="closeModal()">Batal</button>
+      <button class="btn-save" onclick="saveSurat()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL DETAIL ===== -->
+<div class="modal-bg hidden" id="modalDetail">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title" id="detailTitle">Detail Surat</span>
+      <button class="btn-close" onclick="document.getElementById('modalDetail').classList.add('hidden')">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+    <div class="modal-body" id="detailBody"></div>
+    <div class="modal-footer">
+      <button class="btn-sec" onclick="document.getElementById('modalDetail').classList.add('hidden')">Tutup</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- end .app -->
+
+<script>
+/* ============================================================
+   DATA & STATE
+   ============================================================ */
+const USERS = { admin: '1234', staff: 'abcd' };
+let currentUser = '';
+let editId = null;
+let currentType = 'masuk';
+let tujuanList = [];
+
+let data = {
+  masuk: [
+    {
+      id: 'SM001', nomor: '001/IN/VI/2026', perihal: 'Undangan Rapat Koordinasi',
+      pengirim: 'Dinas Pendidikan Kota', tgl: '2026-06-01',
+      penerima: 'Kepala Bagian Umum', sifat: 'Penting', klasifikasi: 'Resmi',
+      status: 'selesai', catatan: 'Telah ditindaklanjuti',
+      fisik: { jenis: 'Surat Resmi', lembar: 2, lampiran: 'Agenda Rapat', kondisi: 'Baik', lokasi: 'Rak A-01' },
+      tujuan: [{ nama: 'Kabag Umum', jabatan: 'Kepala Bagian Umum', tgl: '2026-06-02', via: 'Langsung' }],
+      riwayat: [
+        { tgl: '2026-06-01', aksi: 'Surat diterima dan dicatat' },
+        { tgl: '2026-06-02', aksi: 'Diteruskan ke Kabag Umum' },
+        { tgl: '2026-06-03', aksi: 'Disposisi selesai' }
+      ]
+    },
+    {
+      id: 'SM002', nomor: '002/IN/VI/2026', perihal: 'Permintaan Data Pegawai',
+      pengirim: 'BKD Provinsi', tgl: '2026-06-05',
+      penerima: 'Kepala Bagian Kepegawaian', sifat: 'Biasa', klasifikasi: 'Resmi',
+      status: 'proses', catatan: 'Sedang diproses bagian kepegawaian',
+      fisik: { jenis: 'Surat Dinas', lembar: 1, lampiran: '-', kondisi: 'Baik', lokasi: 'Rak A-02' },
+      tujuan: [{ nama: 'Kabag Kepegawaian', jabatan: 'Kepala Bagian Kepegawaian', tgl: '2026-06-06', via: 'Email Internal' }],
+      riwayat: [
+        { tgl: '2026-06-05', aksi: 'Surat diterima' },
+        { tgl: '2026-06-06', aksi: 'Diteruskan ke Kabag Kepegawaian' }
+      ]
+    },
+    {
+      id: 'SM003', nomor: '003/IN/VI/2026', perihal: 'Nota Dinas Anggaran Q3',
+      pengirim: 'Biro Keuangan', tgl: '2026-06-10',
+      penerima: 'Kepala Badan', sifat: 'Rahasia', klasifikasi: 'Internal',
+      status: 'pending', catatan: 'Menunggu disposisi pimpinan',
+      fisik: { jenis: 'Nota Dinas', lembar: 4, lampiran: 'RAB 2026', kondisi: 'Baik', lokasi: 'Lemari B-01' },
+      tujuan: [],
+      riwayat: [{ tgl: '2026-06-10', aksi: 'Surat diterima dan dicatat' }]
+    }
+  ],
+  keluar: [
+    {
+      id: 'SK001', nomor: '001/OUT/VI/2026', perihal: 'Surat Balasan Undangan Rapat',
+      tujuanUtama: 'Dinas Pendidikan Kota', tgl: '2026-06-03',
+      penandatangan: 'Kepala Badan', sifat: 'Biasa', klasifikasi: 'Resmi',
+      status: 'selesai', catatan: 'Telah dikirim via ekspedisi',
+      fisik: { jenis: 'Surat Dinas', lembar: 1, lampiran: '-', kondisi: 'Baik', lokasi: 'Outbox-01' },
+      tujuan: [{ nama: 'Kepala Dinas Pendidikan', jabatan: 'Kepala Dinas', tgl: '2026-06-03', via: 'Ekspedisi' }],
+      riwayat: [
+        { tgl: '2026-06-03', aksi: 'Surat ditandatangani' },
+        { tgl: '2026-06-03', aksi: 'Dikirim via ekspedisi' }
+      ]
+    },
+    {
+      id: 'SK002', nomor: '002/OUT/VI/2026', perihal: 'Permohonan Izin Kegiatan',
+      tujuanUtama: 'Bupati Kabupaten', tgl: '2026-06-08',
+      penandatangan: 'Sekretaris', sifat: 'Penting', klasifikasi: 'Resmi',
+      status: 'proses', catatan: 'Dalam proses pengiriman',
+      fisik: { jenis: 'Surat Resmi', lembar: 3, lampiran: 'Proposal Kegiatan', kondisi: 'Baik', lokasi: 'Outbox-02' },
+      tujuan: [
+        { nama: 'Bupati', jabatan: 'Bupati Kabupaten', tgl: '2026-06-09', via: 'Pos Tercatat' },
+        { nama: 'Sekda', jabatan: 'Sekretaris Daerah', tgl: '2026-06-09', via: 'Langsung' }
+      ],
+      riwayat: [
+        { tgl: '2026-06-08', aksi: 'Surat selesai dibuat' },
+        { tgl: '2026-06-08', aksi: 'Menunggu pengiriman' }
+      ]
+    }
+  ]
+};
+
+/* ============================================================
+   AUTH
+   ============================================================ */
+function doLogin() {
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value;
+  if (USERS[u] && USERS[u] === p) {
+    currentUser = u;
+    document.getElementById('loginPage').classList.add('hidden');
+    document.getElementById('mainApp').classList.remove('hidden');
+    document.getElementById('userLabel').textContent = u;
+    document.getElementById('userBadge').textContent = u.substring(0, 2).toUpperCase();
+    document.getElementById('loginErr').classList.add('hidden');
+    showPage('dashboard', null);
+  } else {
+    document.getElementById('loginErr').classList.remove('hidden');
+  }
+}
+document.getElementById('loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+function doLogout() {
+  currentUser = '';
+  document.getElementById('mainApp').classList.add('hidden');
+  document.getElementById('loginPage').classList.remove('hidden');
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+function showPage(page, el) {
+  if (el) {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    el.classList.add('active');
+  }
+  const c = document.getElementById('mainContent');
+  if (page === 'dashboard') c.innerHTML = renderDashboard();
+  else if (page === 'masuk') { currentType = 'masuk'; c.innerHTML = renderSuratList('masuk'); }
+  else if (page === 'keluar') { currentType = 'keluar'; c.innerHTML = renderSuratList('keluar'); }
+  else if (page === 'pengiriman') c.innerHTML = renderPengiriman();
+}
+
+/* ============================================================
+   DASHBOARD
+   ============================================================ */
+function renderDashboard() {
+  const sm = data.masuk.length, sk = data.keluar.length;
+  const smp = data.masuk.filter(s => s.status === 'pending').length;
+  const skp = data.keluar.filter(s => s.status === 'proses').length;
+  return `
+  <div class="page-header">
+    <div><div class="page-title">Dashboard</div><div class="page-sub">Ringkasan aktivitas surat</div></div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-card blue">
+      <div class="s-label">Surat Masuk</div><div class="s-val">${sm}</div>
+      <i class="ti ti-mail-down s-icon"></i>
+    </div>
+    <div class="stat-card green">
+      <div class="s-label">Surat Keluar</div><div class="s-val">${sk}</div>
+      <i class="ti ti-mail-up s-icon"></i>
+    </div>
+    <div class="stat-card amber">
+      <div class="s-label">Pending Masuk</div><div class="s-val">${smp}</div>
+      <i class="ti ti-clock s-icon"></i>
+    </div>
+    <div class="stat-card red">
+      <div class="s-label">Proses Keluar</div><div class="s-val">${skp}</div>
+      <i class="ti ti-loader s-icon"></i>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+    <div class="table-wrap">
+      <div style="padding:.875rem 1rem;border-bottom:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <span style="font-weight:600;font-size:14px">Surat Masuk Terbaru</span>
+        <span style="font-size:12.5px;color:var(--text-accent);cursor:pointer" onclick="showPage('masuk',document.querySelectorAll('.nav-item')[1])">Lihat semua →</span>
+      </div>
+      <table><thead><tr><th>No. Surat</th><th>Perihal</th><th>Status</th></tr></thead>
+      <tbody>${data.masuk.slice(-3).reverse().map(s => `
+        <tr><td style="font-size:12px;color:var(--text-muted)">${s.nomor}</td><td>${s.perihal}</td>
+        <td><span class="badge ${s.status}">${s.status}</span></td></tr>`).join('')}
+      </tbody></table>
+    </div>
+    <div class="table-wrap">
+      <div style="padding:.875rem 1rem;border-bottom:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <span style="font-weight:600;font-size:14px">Surat Keluar Terbaru</span>
+        <span style="font-size:12.5px;color:var(--text-accent);cursor:pointer" onclick="showPage('keluar',document.querySelectorAll('.nav-item')[2])">Lihat semua →</span>
+      </div>
+      <table><thead><tr><th>No. Surat</th><th>Perihal</th><th>Status</th></tr></thead>
+      <tbody>${data.keluar.slice(-3).reverse().map(s => `
+        <tr><td style="font-size:12px;color:var(--text-muted)">${s.nomor}</td><td>${s.perihal}</td>
+        <td><span class="badge ${s.status}">${s.status}</span></td></tr>`).join('')}
+      </tbody></table>
+    </div>
+  </div>`;
+}
+
+/* ============================================================
+   SURAT LIST
+   ============================================================ */
+function renderSuratList(type) {
+  const list = data[type];
+  const label = type === 'masuk' ? 'Surat Masuk' : 'Surat Keluar';
+  const rows = list.map(s => {
+    const pihak = type === 'masuk' ? s.pengirim : s.tujuanUtama;
+    return `<tr>
+      <td style="font-size:12px;color:var(--text-muted);white-space:nowrap">${s.nomor}</td>
+      <td>
+        <div style="font-size:13.5px;font-weight:500">${s.perihal}</div>
+        <div style="font-size:11.5px;color:var(--text-muted)">${pihak}</div>
+      </td>
+      <td style="white-space:nowrap">${s.tgl}</td>
+      <td><span class="badge ${type}">${type === 'masuk' ? 'Masuk' : 'Keluar'}</span></td>
+      <td><span class="badge ${s.sifat === 'Rahasia' || s.sifat === 'Sangat Rahasia' ? 'rahasia' : 'masuk'}">${s.sifat}</span></td>
+      <td><span class="badge ${s.status}">${s.status}</span></td>
+      <td>
+        <div class="row-actions">
+          <button class="btn-icon info" title="Lihat detail" onclick="showDetail('${type}','${s.id}')">
+            <i class="ti ti-eye"></i>
+          </button>
+          <button class="btn-icon" title="Edit" onclick="openEdit('${type}','${s.id}')">
+            <i class="ti ti-edit"></i>
+          </button>
+          <button class="btn-icon danger" title="Hapus" onclick="deleteSurat('${type}','${s.id}')">
+            <i class="ti ti-trash"></i>
+          </button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  return `
+  <div class="page-header">
+    <div>
+      <div class="page-title">${label}</div>
+      <div class="page-sub">${list.length} surat tercatat</div>
+    </div>
+    <button class="btn-add" onclick="openAdd('${type}')">
+      <i class="ti ti-plus"></i> Tambah ${label}
+    </button>
+  </div>
+  <div class="filter-bar">
+    <input type="text" placeholder="Cari nomor surat, perihal, pengirim..." id="searchInput" oninput="filterTable()">
+    <select id="filterStatus" onchange="filterTable()">
+      <option value="">Semua status</option>
+      <option value="pending">Pending</option>
+      <option value="proses">Proses</option>
+      <option value="selesai">Selesai</option>
+    </select>
+    <select id="filterSifat" onchange="filterTable()">
+      <option value="">Semua sifat</option>
+      <option value="Biasa">Biasa</option>
+      <option value="Penting">Penting</option>
+      <option value="Rahasia">Rahasia</option>
+      <option value="Sangat Rahasia">Sangat Rahasia</option>
+    </select>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Nomor Surat</th>
+          <th>${type === 'masuk' ? 'Perihal / Pengirim' : 'Perihal / Tujuan'}</th>
+          <th>Tanggal</th>
+          <th>Jenis</th>
+          <th>Sifat</th>
+          <th>Status</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="suratTbody">
+        ${rows || '<tr><td colspan="7"><div class="no-data"><i class="ti ti-inbox"></i>Belum ada data surat</div></td></tr>'}
+      </tbody>
+    </table>
+  </div>`;
+}
+
+function filterTable() {
+  const q = (document.getElementById('searchInput')?.value || '').toLowerCase();
+  const st = document.getElementById('filterStatus')?.value || '';
+  const sf = document.getElementById('filterSifat')?.value || '';
+  document.querySelectorAll('#suratTbody tr').forEach(r => {
+    const txt = r.textContent.toLowerCase();
+    r.style.display = ((!q || txt.includes(q)) && (!st || txt.includes(st)) && (!sf || txt.includes(sf))) ? '' : 'none';
+  });
+}
+
+/* ============================================================
+   FORM MODAL
+   ============================================================ */
+function openAdd(type) {
+  editId = null; currentType = type; tujuanList = [];
+  document.getElementById('modalTitle').textContent = 'Tambah ' + (type === 'masuk' ? 'Surat Masuk' : 'Surat Keluar');
+  document.getElementById('modalBody').innerHTML = renderForm(type, null);
+  document.getElementById('modalForm').classList.remove('hidden');
+}
+
+function openEdit(type, id) {
+  editId = id; currentType = type;
+  const s = data[type].find(x => x.id === id);
+  tujuanList = s.tujuan ? [...s.tujuan.map(t => ({ ...t }))] : [];
+  document.getElementById('modalTitle').textContent = 'Edit Surat — ' + s.nomor;
+  document.getElementById('modalBody').innerHTML = renderForm(type, s);
+  document.getElementById('modalForm').classList.remove('hidden');
+}
+
+function closeModal() {
+  document.getElementById('modalForm').classList.add('hidden');
+}
+
+function renderTujuanEntries() {
+  if (!tujuanList.length) return '<p style="font-size:13px;color:var(--text-muted);padding:.25rem 0">Belum ada tujuan. Klik tombol di bawah untuk menambahkan.</p>';
+  return tujuanList.map((t, i) => `
+  <div style="background:var(--surface-1);border-radius:var(--radius);padding:.875rem;margin-bottom:.75rem;border:0.5px solid var(--border)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem">
+      <span style="font-size:12px;font-weight:600;color:var(--text-muted)">TUJUAN ${i + 1}</span>
+      <button class="btn-rem" onclick="removeTujuan(${i})" title="Hapus tujuan ini">
+        <i class="ti ti-trash"></i>
+      </button>
+    </div>
+    <div class="form-grid">
+      <div class="form-field" style="margin:0">
+        <label>Nama Penerima</label>
+        <input type="text" id="tj_nama_${i}" value="${t.nama || ''}" placeholder="Nama lengkap">
+      </div>
+      <div class="form-field" style="margin:0">
+        <label>Jabatan</label>
+        <input type="text" id="tj_jab_${i}" value="${t.jabatan || ''}" placeholder="Jabatan / posisi">
+      </div>
+      <div class="form-field" style="margin:0">
+        <label>Tanggal Kirim / Disposisi</label>
+        <input type="date" id="tj_tgl_${i}" value="${t.tgl || ''}">
+      </div>
+      <div class="form-field" style="margin:0">
+        <label>Via / Metode Pengiriman</label>
+        <select id="tj_via_${i}">
+          <option ${t.via === 'Langsung' ? 'selected' : ''}>Langsung</option>
+          <option ${t.via === 'Ekspedisi' ? 'selected' : ''}>Ekspedisi</option>
+          <option ${t.via === 'Pos Tercatat' ? 'selected' : ''}>Pos Tercatat</option>
+          <option ${t.via === 'Email Internal' ? 'selected' : ''}>Email Internal</option>
+          <option ${t.via === 'Kurir' ? 'selected' : ''}>Kurir</option>
+          <option ${t.via === 'Fax' ? 'selected' : ''}>Fax</option>
+        </select>
+      </div>
+    </div>
+  </div>`).join('');
+}
+
+function addTujuan() {
+  collectCurrentTujuan();
+  tujuanList.push({ nama: '', jabatan: '', tgl: '', via: 'Langsung' });
+  document.getElementById('tujuanEntries').innerHTML = renderTujuanEntries();
+}
+
+function removeTujuan(i) {
+  collectCurrentTujuan();
+  tujuanList.splice(i, 1);
+  document.getElementById('tujuanEntries').innerHTML = renderTujuanEntries();
+}
+
+function collectCurrentTujuan() {
+  tujuanList = tujuanList.map((_, i) => ({
+    nama: document.getElementById('tj_nama_' + i)?.value || '',
+    jabatan: document.getElementById('tj_jab_' + i)?.value || '',
+    tgl: document.getElementById('tj_tgl_' + i)?.value || '',
+    via: document.getElementById('tj_via_' + i)?.value || 'Langsung',
+  }));
+}
+
+function renderForm(type, s) {
+  const isMasuk = type === 'masuk';
+  return `
+  <div class="form-section" style="border:none;padding:0;margin-bottom:.75rem">Informasi Dasar</div>
+  <div class="form-grid">
+    <div class="form-field">
+      <label>Nomor Surat</label>
+      <input type="text" id="f_nomor" value="${s?.nomor || ''}" placeholder="001/IN/VI/2026">
+    </div>
+    <div class="form-field">
+      <label>Tanggal Surat</label>
+      <input type="date" id="f_tgl" value="${s?.tgl || ''}">
+    </div>
+    <div class="form-field" style="grid-column:1/-1">
+      <label>Perihal</label>
+      <input type="text" id="f_perihal" value="${s?.perihal || ''}" placeholder="Isi perihal surat">
+    </div>
+    ${isMasuk ? `
+    <div class="form-field">
+      <label>Pengirim</label>
+      <input type="text" id="f_pihak" value="${s?.pengirim || ''}" placeholder="Nama instansi / perorangan">
+    </div>
+    <div class="form-field">
+      <label>Ditujukan Kepada</label>
+      <input type="text" id="f_penerima" value="${s?.penerima || ''}" placeholder="Bagian / pejabat penerima">
+    </div>
+    ` : `
+    <div class="form-field">
+      <label>Tujuan Utama</label>
+      <input type="text" id="f_pihak" value="${s?.tujuanUtama || ''}" placeholder="Nama instansi / perorangan">
+    </div>
+    <div class="form-field">
+      <label>Penandatangan</label>
+      <input type="text" id="f_penerima" value="${s?.penandatangan || ''}" placeholder="Nama penandatangan surat">
+    </div>
+    `}
+    <div class="form-field">
+      <label>Sifat Surat</label>
+      <select id="f_sifat">
+        <option ${s?.sifat === 'Biasa' ? 'selected' : ''}>Biasa</option>
+        <option ${s?.sifat === 'Penting' ? 'selected' : ''}>Penting</option>
+        <option ${s?.sifat === 'Rahasia' ? 'selected' : ''}>Rahasia</option>
+        <option ${s?.sifat === 'Sangat Rahasia' ? 'selected' : ''}>Sangat Rahasia</option>
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Klasifikasi</label>
+      <select id="f_klas">
+        <option ${s?.klasifikasi === 'Resmi' ? 'selected' : ''}>Resmi</option>
+        <option ${s?.klasifikasi === 'Internal' ? 'selected' : ''}>Internal</option>
+        <option ${s?.klasifikasi === 'Eksternal' ? 'selected' : ''}>Eksternal</option>
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Status</label>
+      <select id="f_status">
+        <option ${s?.status === 'pending' ? 'selected' : ''} value="pending">Pending</option>
+        <option ${s?.status === 'proses' ? 'selected' : ''} value="proses">Proses</option>
+        <option ${s?.status === 'selesai' ? 'selected' : ''} value="selesai">Selesai</option>
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Catatan</label>
+      <input type="text" id="f_catatan" value="${s?.catatan || ''}" placeholder="Catatan tambahan">
+    </div>
+  </div>
+
+  <div class="form-section">Fisik Surat</div>
+  <div class="form-grid">
+    <div class="form-field">
+      <label>Jenis Dokumen</label>
+      <select id="f_jenis">
+        <option ${s?.fisik?.jenis === 'Surat Dinas' ? 'selected' : ''}>Surat Dinas</option>
+        <option ${s?.fisik?.jenis === 'Surat Resmi' ? 'selected' : ''}>Surat Resmi</option>
+        <option ${s?.fisik?.jenis === 'Nota Dinas' ? 'selected' : ''}>Nota Dinas</option>
+        <option ${s?.fisik?.jenis === 'Memo' ? 'selected' : ''}>Memo</option>
+        <option ${s?.fisik?.jenis === 'SK' ? 'selected' : ''}>SK (Surat Keputusan)</option>
+        <option ${s?.fisik?.jenis === 'Edaran' ? 'selected' : ''}>Surat Edaran</option>
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Jumlah Lembar</label>
+      <input type="number" id="f_lembar" value="${s?.fisik?.lembar || 1}" min="1" placeholder="1">
+    </div>
+    <div class="form-field">
+      <label>Lampiran</label>
+      <input type="text" id="f_lamp" value="${s?.fisik?.lampiran || ''}" placeholder="Nama lampiran atau '-'">
+    </div>
+    <div class="form-field">
+      <label>Kondisi Fisik</label>
+      <select id="f_kondisi">
+        <option ${s?.fisik?.kondisi === 'Baik' ? 'selected' : ''}>Baik</option>
+        <option ${s?.fisik?.kondisi === 'Rusak Ringan' ? 'selected' : ''}>Rusak Ringan</option>
+        <option ${s?.fisik?.kondisi === 'Rusak Berat' ? 'selected' : ''}>Rusak Berat</option>
+      </select>
+    </div>
+    <div class="form-field" style="grid-column:1/-1">
+      <label>Lokasi Penyimpanan</label>
+      <input type="text" id="f_lokasi" value="${s?.fisik?.lokasi || ''}" placeholder="Contoh: Rak A-01, Lemari Arsip B-02">
+    </div>
+  </div>
+  <div class="upload-area" onclick="alert('Fitur unggah file tersedia di versi dengan backend server.')">
+    <i class="ti ti-upload"></i>
+    <p>Klik untuk unggah scan / foto surat</p>
+    <small>Format: PDF, JPG, PNG — Maks. 10MB</small>
+  </div>
+
+  <div class="form-section">Tujuan / Distribusi Surat</div>
+  <div id="tujuanEntries">${renderTujuanEntries()}</div>
+  <button class="btn-add-tujuan" onclick="addTujuan()">
+    <i class="ti ti-plus"></i> Tambah Tujuan
+  </button>
+  `;
+}
+
+/* ============================================================
+   SAVE & DELETE
+   ============================================================ */
+function saveSurat() {
+  const nomor = document.getElementById('f_nomor').value.trim();
+  const perihal = document.getElementById('f_perihal').value.trim();
+  if (!nomor || !perihal) {
+    alert('Nomor surat dan perihal wajib diisi.');
+    return;
+  }
+  collectCurrentTujuan();
+  const finalTujuan = tujuanList.filter(t => t.nama.trim());
+
+  const obj = {
+    id: editId || (currentType === 'masuk' ? 'SM' : 'SK') + String(Date.now()).slice(-4),
+    nomor, perihal,
+    tgl: document.getElementById('f_tgl').value,
+    sifat: document.getElementById('f_sifat').value,
+    klasifikasi: document.getElementById('f_klas').value,
+    status: document.getElementById('f_status').value,
+    catatan: document.getElementById('f_catatan').value,
+    fisik: {
+      jenis: document.getElementById('f_jenis').value,
+      lembar: parseInt(document.getElementById('f_lembar').value) || 1,
+      lampiran: document.getElementById('f_lamp').value,
+      kondisi: document.getElementById('f_kondisi').value,
+      lokasi: document.getElementById('f_lokasi').value,
+    },
+    tujuan: finalTujuan,
+    riwayat: [{ tgl: new Date().toISOString().slice(0, 10), aksi: editId ? 'Data diperbarui' : 'Surat dicatat' }],
+  };
+
+  if (currentType === 'masuk') {
+    obj.pengirim = document.getElementById('f_pihak').value;
+    obj.penerima = document.getElementById('f_penerima').value;
+  } else {
+    obj.tujuanUtama = document.getElementById('f_pihak').value;
+    obj.penandatangan = document.getElementById('f_penerima').value;
+  }
+
+  if (editId) {
+    const idx = data[currentType].findIndex(x => x.id === editId);
+    const old = data[currentType][idx];
+    obj.riwayat = [...old.riwayat, { tgl: new Date().toISOString().slice(0, 10), aksi: 'Data diperbarui' }];
+    data[currentType][idx] = obj;
+  } else {
+    data[currentType].push(obj);
+  }
+  closeModal();
+  showPage(currentType, null);
+}
+
+function deleteSurat(type, id) {
+  if (!confirm('Hapus surat ini? Tindakan tidak dapat dibatalkan.')) return;
+  data[type] = data[type].filter(s => s.id !== id);
+  showPage(type, null);
+}
+
+/* ============================================================
+   DETAIL MODAL
+   ============================================================ */
+function showDetail(type, id) {
+  const s = data[type].find(x => x.id === id);
+  const label = type === 'masuk' ? 'Surat Masuk' : 'Surat Keluar';
+  document.getElementById('detailTitle').textContent = `Detail ${label} — ${s.nomor}`;
+  document.getElementById('detailBody').innerHTML = `
+  <div class="detail-section">
+    <h4>Informasi Dasar</h4>
+    <div class="detail-grid">
+      <div class="detail-row"><span class="d-label">Nomor Surat</span><span class="d-val">${s.nomor}</span></div>
+      <div class="detail-row"><span class="d-label">Tanggal</span><span class="d-val">${s.tgl}</span></div>
+      <div class="detail-row full"><span class="d-label">Perihal</span><span class="d-val">${s.perihal}</span></div>
+      ${type === 'masuk' ? `
+      <div class="detail-row"><span class="d-label">Pengirim</span><span class="d-val">${s.pengirim}</span></div>
+      <div class="detail-row"><span class="d-label">Penerima</span><span class="d-val">${s.penerima}</span></div>
+      ` : `
+      <div class="detail-row"><span class="d-label">Tujuan Utama</span><span class="d-val">${s.tujuanUtama}</span></div>
+      <div class="detail-row"><span class="d-label">Penandatangan</span><span class="d-val">${s.penandatangan}</span></div>
+      `}
+      <div class="detail-row"><span class="d-label">Sifat Surat</span>
+        <span class="d-val"><span class="badge ${s.sifat === 'Rahasia' || s.sifat === 'Sangat Rahasia' ? 'rahasia' : 'masuk'}">${s.sifat}</span></span>
+      </div>
+      <div class="detail-row"><span class="d-label">Klasifikasi</span><span class="d-val">${s.klasifikasi}</span></div>
+      <div class="detail-row"><span class="d-label">Status</span>
+        <span class="d-val"><span class="badge ${s.status}">${s.status}</span></span>
+      </div>
+      <div class="detail-row"><span class="d-label">Catatan</span><span class="d-val">${s.catatan || '-'}</span></div>
+    </div>
+  </div>
+
+  <div class="detail-section">
+    <h4>Fisik Surat</h4>
+    <div class="fisik-info">
+      <div class="detail-row"><span class="d-label">Jenis Dokumen</span><span class="d-val">${s.fisik.jenis}</span></div>
+      <div class="detail-row"><span class="d-label">Jumlah Lembar</span><span class="d-val">${s.fisik.lembar} lembar</span></div>
+      <div class="detail-row"><span class="d-label">Lampiran</span><span class="d-val">${s.fisik.lampiran || '-'}</span></div>
+      <div class="detail-row"><span class="d-label">Kondisi Fisik</span><span class="d-val">${s.fisik.kondisi}</span></div>
+      <div class="detail-row" style="grid-column:1/-1">
+        <span class="d-label">Lokasi Penyimpanan</span>
+        <span class="d-val"><i class="ti ti-map-pin" style="font-size:14px;vertical-align:-2px;color:var(--text-accent)"></i> ${s.fisik.lokasi}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="detail-section">
+    <h4>Tujuan / Distribusi Surat</h4>
+    ${s.tujuan && s.tujuan.length
+      ? `<ul class="tujuan-list">${s.tujuan.map(t => `
+          <li>
+            <i class="ti ti-user-check"></i>
+            <div>
+              <strong>${t.nama}</strong> — ${t.jabatan}
+              <span class="tujuan-no">${t.tgl} &nbsp;·&nbsp; Via ${t.via}</span>
+            </div>
+          </li>`).join('')}</ul>`
+      : '<p style="color:var(--text-muted);font-size:13.5px">Belum ada tujuan/disposisi tercatat.</p>'
+    }
+  </div>
+
+  <div class="detail-section" style="border:none;margin:0">
+    <h4>Riwayat Tindakan</h4>
+    <ul class="timeline">
+      ${(s.riwayat || []).map(r => `
+      <li>
+        <span class="t-date">${r.tgl}</span>
+        <div class="t-act">${r.aksi}</div>
+      </li>`).join('')}
+    </ul>
+  </div>`;
+  document.getElementById('modalDetail').classList.remove('hidden');
+}
+
+/* ============================================================
+   PENGIRIMAN PAGE
+   ============================================================ */
+function renderPengiriman() {
+  const allKeluar = data.keluar;
+  const allMasuk = data.masuk;
+
+  const keluarHTML = allKeluar.map(s => {
+    const routes = s.tujuan && s.tujuan.length
+      ? s.tujuan.map(t => `
+        <div class="kirim-route">
+          <div class="kirim-node"><div class="kn-label">Dari</div><div class="kn-val">Instansi Kami</div></div>
+          <i class="ti ti-arrow-right kirim-arrow"></i>
+          <div class="kirim-via"><div class="kn-label">Via</div><div class="kn-val">${t.via}</div></div>
+          <i class="ti ti-arrow-right kirim-arrow"></i>
+          <div class="kirim-node">
+            <div class="kn-label">Kepada</div>
+            <div class="kn-val">${t.nama}<br><span style="font-size:11px;color:var(--text-muted)">${t.jabatan}</span></div>
+          </div>
+          <i class="ti ti-arrow-right kirim-arrow"></i>
+          <div class="kirim-node"><div class="kn-label">Tanggal</div><div class="kn-val">${t.tgl || '-'}</div></div>
+        </div>`).join('')
+      : '<p style="font-size:13px;color:var(--text-muted);padding:.5rem 0">Belum ada data pengiriman.</p>';
+    return `
+    <div class="kirim-card">
+      <div class="kirim-header">
+        <div>
+          <div class="kirim-no"><i class="ti ti-hash" style="font-size:12px"></i> ${s.nomor} &nbsp;·&nbsp; ${s.tgl}</div>
+          <div class="kirim-perihal">${s.perihal}</div>
+        </div>
+        <span class="badge ${s.status}">${s.status}</span>
+      </div>
+      <div style="font-size:12.5px;color:var(--text-muted);margin-bottom:.5rem">
+        <i class="ti ti-pencil" style="font-size:14px;vertical-align:-2px"></i> Penandatangan: ${s.penandatangan}
+      </div>
+      ${routes}
+    </div>`;
+  }).join('');
+
+  const masukHTML = allMasuk.map(s => {
+    const routes = s.tujuan && s.tujuan.length
+      ? s.tujuan.map(t => `
+        <div class="kirim-route">
+          <div class="kirim-node">
+            <div class="kn-label">Dari</div>
+            <div class="kn-val">${s.pengirim}</div>
+          </div>
+          <i class="ti ti-arrow-right kirim-arrow"></i>
+          <div class="kirim-via"><div class="kn-label">Via</div><div class="kn-val">${t.via}</div></div>
+          <i class="ti ti-arrow-right kirim-arrow"></i>
+          <div class="kirim-node">
+            <div class="kn-label">Disposisi Ke</div>
+            <div class="kn-val">${t.nama}<br><span style="font-size:11px;color:var(--text-muted)">${t.jabatan}</span></div>
+          </div>
+          <i class="ti ti-arrow-right kirim-arrow"></i>
+          <div class="kirim-node"><div class="kn-label">Tanggal</div><div class="kn-val">${t.tgl || '-'}</div></div>
+        </div>`).join('')
+      : '<p style="font-size:13px;color:var(--text-muted);padding:.5rem 0">Belum ada disposisi tercatat.</p>';
+    return `
+    <div class="kirim-card">
+      <div class="kirim-header">
+        <div>
+          <div class="kirim-no"><i class="ti ti-hash" style="font-size:12px"></i> ${s.nomor} &nbsp;·&nbsp; ${s.tgl}</div>
+          <div class="kirim-perihal">${s.perihal}</div>
+        </div>
+        <span class="badge ${s.status}">${s.status}</span>
+      </div>
+      <div style="font-size:12.5px;color:var(--text-muted);margin-bottom:.5rem">
+        <i class="ti ti-building" style="font-size:14px;vertical-align:-2px"></i> Pengirim: ${s.pengirim}
+      </div>
+      ${routes}
+    </div>`;
+  }).join('');
+
+  return `
+  <div class="page-header">
+    <div>
+      <div class="page-title">Halaman Pengiriman</div>
+      <div class="page-sub">Rekap distribusi dan rute pengiriman surat</div>
+    </div>
+  </div>
+  <div class="tab-bar">
+    <button class="tab-btn active" id="tabKeluar" onclick="switchPKTab('keluar')">Surat Keluar (${allKeluar.length})</button>
+    <button class="tab-btn" id="tabMasuk" onclick="switchPKTab('masuk')">Disposisi Masuk (${allMasuk.length})</button>
+  </div>
+  <div id="pkKeluar">${keluarHTML || '<p style="color:var(--text-muted)">Belum ada surat keluar.</p>'}</div>
+  <div id="pkMasuk" class="hidden">${masukHTML || '<p style="color:var(--text-muted)">Belum ada surat masuk.</p>'}</div>`;
+}
+
+function switchPKTab(tab) {
+  document.getElementById('pkKeluar').classList.toggle('hidden', tab !== 'keluar');
+  document.getElementById('pkMasuk').classList.toggle('hidden', tab !== 'masuk');
+  document.getElementById('tabKeluar').classList.toggle('active', tab === 'keluar');
+  document.getElementById('tabMasuk').classList.toggle('active', tab === 'masuk');
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+showPage('dashboard', null);
+</script>
+</body>
+</html>
